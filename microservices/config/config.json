@@ -1,0 +1,32 @@
+{
+  "host": "localhost",
+  "port": "9090",
+  "database": {
+    "dbType": "mysql",
+    "dbName": "todos",
+    "host": "localhost",
+    "port": "3306",
+    "username": "root",
+    "password": "test1234"
+  },
+  "swagger": {
+    "title": "Example API Documentation",
+    "description": "This is an example project",
+    "version": "0.0.1",
+    "host": "localhost:9090",
+    "basePath": "/v1",
+    "schemes": ["http"]
+  },
+  "log": {
+    "logLevelMin": "trace",
+    "logLevel": "debug",
+    "logErrorStack": "true"
+  },
+  "redis": {
+    "host": "localhost",
+    "password": "",
+    "maxIdle": 30,
+    "maxActive": 30,
+    "idleTimeout": 200
+  }
+}
