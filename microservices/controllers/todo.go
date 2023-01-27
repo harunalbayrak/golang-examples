@@ -7,21 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// ListAccounts godoc
-//
-//	@Summary		List accounts
-//	@Description	get accounts
-//	@Tags			accounts
-//	@Accept			json
-//	@Produce		json
-//	@Param			q	query		string	false	"name search by q"	Format(email)
-//	@Success		200	{array}		models.Todo
-//	@Router			/v1/todo [get]
 func GetTodos(c *gin.Context) {
-	// appG := app.Gin{C: c}
+	userID := c.Params.ByName("id")
 
 	var todo []models.Todo
-	err := models.GetAllTodos(&todo)
+	err := models.GetAllTodos(&todo, userID)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
@@ -41,9 +31,11 @@ func CreateATodo(c *gin.Context) {
 }
 
 func GetATodo(c *gin.Context) {
-	id := c.Params.ByName("id")
+	userID := c.Params.ByName("id")
+	todoID := c.Params.ByName("todo_id")
+
 	var todo models.Todo
-	err := models.GetATodo(&todo, id)
+	err := models.GetATodo(&todo, todoID, userID)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
@@ -52,14 +44,16 @@ func GetATodo(c *gin.Context) {
 }
 
 func UpdateATodo(c *gin.Context) {
+	userID := c.Params.ByName("id")
+	todoID := c.Params.ByName("todo_id")
+
 	var todo models.Todo
-	id := c.Params.ByName("id")
-	err := models.GetATodo(&todo, id)
+	err := models.GetATodo(&todo, todoID, userID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, todo)
 	}
 	c.BindJSON(&todo)
-	err = models.UpdateATodo(&todo, id)
+	err = models.UpdateATodo(&todo)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
@@ -68,9 +62,12 @@ func UpdateATodo(c *gin.Context) {
 }
 
 func DeleteATodo(c *gin.Context) {
+	userID := c.Params.ByName("id")
+	todoID := c.Params.ByName("todo_id")
+
 	var todo models.Todo
 	id := c.Params.ByName("id")
-	err := models.DeleteATodo(&todo, id)
+	err := models.DeleteATodo(&todo, todoID, userID)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {

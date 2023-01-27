@@ -1,23 +1,26 @@
 package models
 
-import(
-	"fmt"
+import (
 	"examples/microservices/config"
+	"fmt"
+
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
 )
 
 type Todo struct {
-	ID uint            `json:"id"`
-	Title string       `json:"title"`
+	gorm.Model
+	Title       string `json:"title"`
 	Description string `json:"description"`
+	UserID      uint
 }
 
 func (b *Todo) TableName() string {
 	return "todo"
 }
 
-func GetAllTodos(todos *[]Todo) (err error) {
-	if err = config.DB.Find(todos).Error; err != nil {
+func GetAllTodos(todos *[]Todo, userID string) (err error) {
+	if err = config.DB.Where("user_id = ?", userID).Find(todos).Error; err != nil {
 		return err
 	}
 
@@ -31,20 +34,20 @@ func CreateATodo(todo *Todo) (err error) {
 	return nil
 }
 
-func GetATodo(todo *Todo, id string) (err error) {
-	if err := config.DB.Where("id = ?", id).First(todo).Error; err != nil {
+func GetATodo(todo *Todo, id string, userID string) (err error) {
+	if err := config.DB.Where("id = ? AND user_id = ?", id, userID).First(todo).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func UpdateATodo(todo *Todo, id string) (err error) {
+func UpdateATodo(todo *Todo) (err error) {
 	fmt.Println(todo)
 	config.DB.Save(todo)
 	return nil
 }
 
-func DeleteATodo(todo *Todo, id string) (err error) {
-	config.DB.Where("id = ?", id).Delete(todo)
+func DeleteATodo(todo *Todo, id string, userID string) (err error) {
+	config.DB.Where("id = ? AND user_id = ?", id).Delete(todo)
 	return nil
 }

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"examples/microservices/models"
+	"examples/microservices/pkg/setting"
 	"examples/microservices/pkg/util"
 	"html"
 	"net/http"
@@ -12,6 +13,8 @@ import (
 )
 
 type Auth struct {
+	Key      string `json:"key"`
+	Type     string `json:"type"`
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
@@ -30,6 +33,11 @@ func GetUsers(c *gin.Context) {
 
 func CreateAUser(c *gin.Context) {
 	var user models.User
+	user.Type = c.Params.ByName("type")
+	if !strings.EqualFold(user.Type, "Admin") && !strings.EqualFold(user.Type, "User") {
+		c.AbortWithStatus(http.StatusNotFound)
+	}
+
 	c.BindJSON(&user)
 	err := models.CreateAUser(&user)
 	if err != nil {
@@ -90,14 +98,31 @@ func Register(c *gin.Context) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
 	user.Username = html.EscapeString(strings.TrimSpace(input.Username))
 	user.Password = string(hashedPassword)
+	user.Type = input.Type
 
-	err = models.CreateAUser(&user)
+	if strings.EqualFold(user.Type, "Admin") {
+		if input.Key == setting.AppSettings.Key {
+			RegisterUser(c, user)
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "registiration is failed: key is wrong."})
+		}
+	} else if strings.EqualFold(user.Type, "User") {
+		RegisterUser(c, user)
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "there is such no type"})
+	}
+}
+
+func RegisterUser(c *gin.Context, user models.User) {
+	err := models.CreateAUser(&user)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "creation is failed"})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "registration success!"})

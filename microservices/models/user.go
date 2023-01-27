@@ -18,6 +18,7 @@ type User struct {
 	Email        string `json:"email"`
 	Token        string `json:"token"`
 	RefreshToken string `json:"refreshToken"`
+	Type         string `json:"type"`
 }
 
 func (u *User) PrepareGive() {

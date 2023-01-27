@@ -1,8 +1,6 @@
 package setting
 
 import (
-	"time"
-
 	"github.com/spf13/viper"
 )
 
@@ -30,21 +28,13 @@ type Log struct {
 	LogErrorStack string `mapstructure:"logErrorStack"`
 }
 
-type Redis struct {
-	Host        string        `mapstructure:"host"`
-	Password    string        `mapstructure:"password"`
-	MaxIdle     int           `mapstructure:"maxIdle"`
-	MaxActive   int           `mapstructure:"maxActive"`
-	IdleTimeout time.Duration `mapstructure:"idleTimeout"`
-}
-
 type App struct {
+	Key             string   `mapstructure:"key"`
 	Host            string   `mapstructure:"host"`
 	Port            string   `mapstructure:"port"`
 	DBSettings      Database `mapstructure:"database"`
 	SwaggerSettings Swagger  `mapstructure:"swagger"`
 	LogSettings     Log      `mapstructure:"log"`
-	RedisSettings   Redis    `mapstructure:"redis"`
 }
 
 var AppSettings = &App{}

@@ -1,4 +1,5 @@
 {
+  "key": "1234",
   "host": "localhost",
   "port": "9090",
   "database": {
@@ -21,12 +22,5 @@
     "logLevelMin": "trace",
     "logLevel": "debug",
     "logErrorStack": "true"
-  },
-  "redis": {
-    "host": "localhost",
-    "password": "",
-    "maxIdle": 30,
-    "maxActive": 30,
-    "idleTimeout": 200
   }
 }

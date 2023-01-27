@@ -15,7 +15,7 @@ func CreateAUser(c *gin.Context) {
 }
 
 func GetAUser(c *gin.Context) {
-	controllers.CreateAUser(c)
+	controllers.GetAUser(c)
 }
 
 func UpdateAUser(c *gin.Context) {

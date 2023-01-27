@@ -13,16 +13,22 @@ func SetupAPIV1(r *gin.Engine) {
 		public.POST("/login", Login)
 	}
 
+	users := r.Group("/api/v1/users")
+	users.Use(middleware.JwtAuthMiddleware())
+	{
+		users.GET("/:id", GetAUser)
+		users.GET("/:id/todo", GetTodos)
+		users.POST("/:id/todo", CreateATodo)
+		users.GET("/:id/todo/:todo_id", GetATodo)
+		users.PUT("/id/todo/:todo_id", UpdateATodo)
+		users.DELETE("/:id/todo/:todo_id", DeleteATodo)
+	}
+
 	protected := r.Group("/api/v1/admin")
 	protected.Use(middleware.JwtAuthMiddleware())
 	{
 		protected.GET("/user", CurrentUser)
 		protected.GET("/users", GetUsers)
-		protected.GET("/user/:id", GetAUser)
-		protected.GET("/todo", GetTodos)
-		protected.POST("/todo", CreateATodo)
-		protected.GET("/todo/:id", GetATodo)
-		protected.PUT("/todo/:id", UpdateATodo)
-		protected.DELETE("/todo/:id", DeleteATodo)
+		protected.GET("/users/:id", GetAUser)
 	}
 }
