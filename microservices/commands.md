@@ -5,7 +5,7 @@
 go mod init examples/microservices
 ```
 
-### Download this project
+### Download mysql
 ```
 go get github.com/go-sql-driver/mysql
 ```

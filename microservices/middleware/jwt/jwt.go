@@ -1,11 +1,11 @@
-package jwt
+package middleware
 
-// "net/http"
+import (
+	"examples/microservices/pkg/util"
+	"net/http"
 
-// "github.com/dgrijalva/jwt-go"
-// "github.com/gin-gonic/gin"
-// "github.com/EDDYCJY/go-gin-example/pkg/e"
-// "github.com/EDDYCJY/go-gin-example/pkg/util"
+	"github.com/gin-gonic/gin"
+)
 
 // JWT is jwt middleware
 // func JWT() gin.HandlerFunc {
@@ -43,3 +43,15 @@ package jwt
 // 		c.Next()
 // 	}
 // }
+
+func JwtAuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		err := util.TokenValid(c)
+		if err != nil {
+			c.String(http.StatusUnauthorized, "Unauthorized")
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}

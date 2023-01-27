@@ -2,9 +2,9 @@ package main
 
 import (
 	"examples/microservices/config"
-	"examples/microservices/docs"
 	"examples/microservices/models"
 	"examples/microservices/pkg/setting"
+	"examples/microservices/pkg/swagger"
 	"examples/microservices/routers"
 	"fmt"
 
@@ -21,22 +21,15 @@ var err error
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
 func main() {
 	setting.Setup()
-	fmt.Println(setting.AppSettings)
-
-	docs.SwaggerInfo.Title = setting.AppSettings.SwaggerSettings.Title
-	docs.SwaggerInfo.Description = setting.AppSettings.SwaggerSettings.Description
-	docs.SwaggerInfo.Version = setting.AppSettings.SwaggerSettings.Version
-	docs.SwaggerInfo.Host = setting.AppSettings.SwaggerSettings.Host
-	docs.SwaggerInfo.BasePath = setting.AppSettings.SwaggerSettings.BasePath
-	docs.SwaggerInfo.Schemes = setting.AppSettings.SwaggerSettings.Schemes
+	swagger.SetupSwagger()
 
 	config.DB, err = gorm.Open(setting.AppSettings.DBSettings.DBType, config.DBUrl())
 	if err != nil {
 		fmt.Println("status: ", err)
 	}
-
 	defer config.DB.Close()
 	config.DB.AutoMigrate(&models.Todo{})
+	config.DB.AutoMigrate(&models.User{})
 
 	r := routers.InitRouter()
 	r.Run(fmt.Sprintf(":%s", setting.AppSettings.Port))
