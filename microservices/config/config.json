@@ -1,7 +1,9 @@
 {
-  "key": "1234",
-  "host": "localhost",
-  "port": "9090",
+  "general": {
+    "key": "1234",
+    "host": "localhost",
+    "port": "9090"
+  },
   "database": {
     "dbType": "mysql",
     "dbName": "todos",
@@ -22,5 +24,9 @@
     "logLevelMin": "trace",
     "logLevel": "debug",
     "logErrorStack": "true"
+  },
+  "token": {
+    "apiSecretKey": "1sddfgdfkjgdfg",
+    "tokenHourLifespan": "1"
   }
 }

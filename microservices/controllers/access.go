@@ -3,6 +3,8 @@ package controllers
 import (
 	"errors"
 	"examples/microservices/models"
+	"examples/microservices/pkg/app"
+	"examples/microservices/pkg/e"
 	"examples/microservices/pkg/util"
 	"net/http"
 	"strconv"
@@ -14,29 +16,28 @@ import (
 func CurrentUser(c *gin.Context) {
 	token := c.Query("token")
 	if token == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "there is no token"})
+		app.ResponseWithError(c, http.StatusBadRequest, e.ERROR_NOT_FOUND_TOKEN)
 		return
 	}
 
 	user_id, err := util.ExtractTokenID(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		app.ResponseWithError(c, http.StatusBadRequest, e.ERROR_EXTRACT_TOKEN)
 		return
 	}
 
 	user, err := models.GetUserByID(user_id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		app.ResponseWithError(c, http.StatusBadRequest, e.ERROR_NOT_FOUND_USER)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "success", "data": user})
+	app.ResponseSuccess(c, user)
 }
 
 func CurrentUserAccess(c *gin.Context) bool {
 	user_id, err := util.ExtractTokenID(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return false
 	}
 
@@ -49,7 +50,6 @@ func CurrentUserAccess(c *gin.Context) bool {
 
 	user, err := models.GetUserByID(user_id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return false
 	}
 
@@ -63,8 +63,6 @@ func CurrentUserAccess(c *gin.Context) bool {
 func CheckAccess(c *gin.Context) error {
 	access := CurrentUserAccess(c)
 	if !access {
-		c.String(http.StatusUnauthorized, "Unauthorized")
-		c.Abort()
 		return errors.New("Unauthorized")
 	}
 

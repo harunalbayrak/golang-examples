@@ -4,9 +4,14 @@ import (
 	middleware "examples/microservices/middleware/jwt"
 
 	"github.com/gin-gonic/gin"
+
+	swaggerFiles "github.com/swaggo/files"     // swagger embed files
+	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
 )
 
 func SetupAPIV1(r *gin.Engine) {
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 	public := r.Group("/api/v1")
 	{
 		public.POST("/register", Register)

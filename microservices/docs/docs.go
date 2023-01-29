@@ -24,9 +24,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/v1/todo": {
+        "/api/v1/todo": {
             "get": {
-                "description": "get accounts",
+                "description": "Get Todos",
                 "consumes": [
                     "application/json"
                 ],
@@ -34,45 +34,24 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "accounts"
+                    "todos"
                 ],
-                "summary": "List accounts",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "format": "email",
-                        "description": "name search by q",
-                        "name": "q",
-                        "in": "query"
-                    }
+                "summary": "Get Todos",
+                "responses": {}
+            },
+            "post": {
+                "description": "Create A Todo",
+                "consumes": [
+                    "application/json"
                 ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Todo"
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    },
-    "definitions": {
-        "models.Todo": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string"
-                }
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "todos"
+                ],
+                "summary": "Create A Todo",
+                "responses": {}
             }
         }
     }

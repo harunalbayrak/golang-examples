@@ -1,13 +1,3 @@
-definitions:
-  models.Todo:
-    properties:
-      description:
-        type: string
-      id:
-        type: integer
-      title:
-        type: string
-    type: object
 info:
   contact:
     email: support@swagger.io
@@ -18,27 +8,25 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
 paths:
-  /v1/todo:
+  /api/v1/todo:
     get:
       consumes:
       - application/json
-      description: get accounts
-      parameters:
-      - description: name search by q
-        format: email
-        in: query
-        name: q
-        type: string
+      description: Get Todos
       produces:
       - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Todo'
-            type: array
-      summary: List accounts
+      responses: {}
+      summary: Get Todos
       tags:
-      - accounts
+      - todos
+    post:
+      consumes:
+      - application/json
+      description: Create A Todo
+      produces:
+      - application/json
+      responses: {}
+      summary: Create A Todo
+      tags:
+      - todos
 swagger: "2.0"

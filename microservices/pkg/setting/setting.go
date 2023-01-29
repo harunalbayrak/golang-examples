@@ -4,6 +4,12 @@ import (
 	"github.com/spf13/viper"
 )
 
+type General struct {
+	Key  string `mapstructure:"key"`
+	Host string `mapstructure:"host"`
+	Port string `mapstructure:"port"`
+}
+
 type Database struct {
 	DBType   string `mapstructure:"dbType"`
 	DBName   string `mapstructure:"dbName"`
@@ -28,13 +34,17 @@ type Log struct {
 	LogErrorStack string `mapstructure:"logErrorStack"`
 }
 
+type Token struct {
+	ApiSecretKey      string `mapstructure:"apiSecretKey"`
+	TokenHourLifespan string `mapstructure:"tokenHourLifespan"`
+}
+
 type App struct {
-	Key             string   `mapstructure:"key"`
-	Host            string   `mapstructure:"host"`
-	Port            string   `mapstructure:"port"`
+	GeneralSettings General  `mapstructure:"general"`
 	DBSettings      Database `mapstructure:"database"`
 	SwaggerSettings Swagger  `mapstructure:"swagger"`
 	LogSettings     Log      `mapstructure:"log"`
+	TokenSettings   Token    `mapstructure:"token"`
 }
 
 var AppSettings = &App{}

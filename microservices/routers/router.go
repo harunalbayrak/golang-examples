@@ -11,8 +11,6 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	// r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
 	apiv1.SetupAPIV1(r)
 
 	return r

@@ -2,13 +2,14 @@ package main
 
 import (
 	"examples/microservices/config"
-	"examples/microservices/models"
 	"examples/microservices/pkg/setting"
 	"examples/microservices/pkg/swagger"
+	"examples/microservices/pkg/util"
 	"examples/microservices/routers"
 	"fmt"
 
 	"github.com/jinzhu/gorm"
+	log "github.com/sirupsen/logrus"
 )
 
 var err error
@@ -25,12 +26,12 @@ func main() {
 
 	config.DB, err = gorm.Open(setting.AppSettings.DBSettings.DBType, config.DBUrl())
 	if err != nil {
-		fmt.Println("status: ", err)
+		log.Error("Error: The database could not be opened")
 	}
 	defer config.DB.Close()
-	config.DB.AutoMigrate(&models.Todo{})
-	config.DB.AutoMigrate(&models.User{})
+
+	util.CreateTables()
 
 	r := routers.InitRouter()
-	r.Run(fmt.Sprintf(":%s", setting.AppSettings.Port))
+	r.Run(fmt.Sprintf(":%s", setting.AppSettings.GeneralSettings.Port))
 }

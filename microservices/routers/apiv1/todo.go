@@ -2,25 +2,37 @@ package apiv1
 
 import (
 	"examples/microservices/controllers"
-	_ "examples/microservices/models"
+	"examples/microservices/models"
 
 	"github.com/gin-gonic/gin"
 )
 
-// ListAccounts godoc
+var (
+	_ = models.Todo{}
+)
+
+// GetTodos godoc
 //
-//	@Summary		List todos
-//	@Description	get todos
-//	@Tags			accounts
+//	@Summary		Get Todos
+//	@Description	Get Todos
+//	@Tags			todos
 //	@Accept			json
 //	@Produce		json
-//	@Param			q	query		string	false	"name search by q"	Format(email)
-//	@Success		200	{array}		models.Todo
+//	@Success		200	{array}	models.Todo
 //	@Router			/api/v1/todo [get]
 func GetTodos(c *gin.Context) {
 	controllers.GetTodos(c)
 }
 
+// CreateATodo godoc
+//
+//	@Summary		Create A Todo
+//	@Description	Create A Todo
+//	@Tags			todos
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	models.Todo
+//	@Router			/api/v1/todo [post]
 func CreateATodo(c *gin.Context) {
 	controllers.CreateATodo(c)
 }

@@ -3,17 +3,16 @@ package models
 import (
 	"errors"
 	"examples/microservices/config"
-	"fmt"
 
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	gorm.Model `gorm:"primary_key" json:"id"`
-	Username   string `gorm:"size:255;not null;unique" json:"username"`
-	Password   string `gorm:"size:255;not null;" json:"password"`
-	Type       string `json:"type"`
+	gorm.Model
+	Username string `gorm:"size:255;not null;unique" json:"username"`
+	Password string `gorm:"size:255;not null;" json:"password"`
+	Type     string `json:"type"`
 }
 
 func (u *User) PrepareGive() {
@@ -43,13 +42,18 @@ func GetAUser(user *User, id string) (err error) {
 }
 
 func UpdateAUser(user *User, id string) (err error) {
-	fmt.Println(user)
-	config.DB.Save(user)
+	if err := config.DB.Save(user).Error; err != nil {
+		return err
+	}
+
 	return nil
 }
 
 func DeleteAUser(user *User, id string) (err error) {
-	config.DB.Where("id = ?", id).Delete(user)
+	if err := config.DB.Where("id = ?", id).Delete(user).Error; err != nil {
+		return err
+	}
+
 	return nil
 }
 
