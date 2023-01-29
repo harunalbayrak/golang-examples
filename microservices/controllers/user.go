@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"examples/microservices/models"
+	"examples/microservices/pkg/e"
 	"examples/microservices/pkg/setting"
 	"examples/microservices/pkg/util"
 	"html"
@@ -19,13 +20,26 @@ type Auth struct {
 	Password string `json:"password" binding:"required"`
 }
 
+func getUserID(c *gin.Context) (userID uint) {
+	return c.MustGet("id").(uint)
+}
+
 func GetUsers(c *gin.Context) {
-	// appG := app.Gin{C: c}
+	err := CheckAccess(c)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"code":    e.ERROR_STATUS_UNAUTHORIZED,
+			"message": e.GetMsg(e.ERROR_STATUS_UNAUTHORIZED),
+		})
+	}
 
 	var user []models.User
-	err := models.GetAllUsers(&user)
+	err = models.GetAllUsers(&user)
 	if err != nil {
-		c.AbortWithStatus(http.StatusNotFound)
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{
+			"code":    e.ERROR_NOT_FOUND,
+			"message": e.GetMsg(e.ERROR_NOT_FOUND),
+		})
 	} else {
 		c.JSON(http.StatusOK, user)
 	}
@@ -48,9 +62,14 @@ func CreateAUser(c *gin.Context) {
 }
 
 func GetAUser(c *gin.Context) {
+	err := CheckAccess(c)
+	if err != nil {
+		return
+	}
+
 	id := c.Params.ByName("id")
 	var user models.User
-	err := models.GetAUser(&user, id)
+	err = models.GetAUser(&user, id)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
@@ -59,9 +78,14 @@ func GetAUser(c *gin.Context) {
 }
 
 func UpdateAUser(c *gin.Context) {
+	err := CheckAccess(c)
+	if err != nil {
+		return
+	}
+
 	var user models.User
 	id := c.Params.ByName("id")
-	err := models.GetAUser(&user, id)
+	err = models.GetAUser(&user, id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, user)
 	}
@@ -75,9 +99,14 @@ func UpdateAUser(c *gin.Context) {
 }
 
 func DeleteAUser(c *gin.Context) {
+	err := CheckAccess(c)
+	if err != nil {
+		return
+	}
+
 	var user models.User
 	id := c.Params.ByName("id")
-	err := models.DeleteAUser(&user, id)
+	err = models.DeleteAUser(&user, id)
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	} else {
@@ -145,20 +174,4 @@ func Login(c *gin.Context) {
 	token, err := util.GenerateToken2(id)
 
 	c.JSON(http.StatusOK, gin.H{"token": token})
-}
-
-func CurrentUser(c *gin.Context) {
-	user_id, err := util.ExtractTokenID(c)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	u, err := models.GetUserByID(user_id)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"message": "success", "data": u})
 }

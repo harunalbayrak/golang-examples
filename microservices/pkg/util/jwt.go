@@ -1,50 +1,79 @@
 package util
 
-// import (
-// 	"time"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+	"time"
 
-// 	"github.com/dgrijalva/jwt-go"
-// )
+	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
+)
 
-// var jwtSecret = "1sddfgdfkjgdfg"
+var tokenhourlifespan = "1"
+var apisecret = "1sddfgdfkjgdfg"
 
-// type Claims struct {
-// 	Username string `json:"username"`
-// 	Password string `json:"password"`
-// 	jwt.StandardClaims
-// }
+func GenerateToken2(user_id uint) (string, error) {
+	token_lifespan, err := strconv.Atoi(tokenhourlifespan)
 
-// // GenerateToken generate tokens used for auth
-// func GenerateToken(username string, password string) (string, error) {
-// 	nowTime := time.Now()
-// 	expireTime := nowTime.Add(3 * time.Hour)
+	if err != nil {
+		return "", err
+	}
 
-// 	claims := Claims{
-// 		EncodeMD5(username),
-// 		EncodeMD5(password),
-// 		jwt.StandardClaims{
-// 			ExpiresAt: expireTime.Unix(),
-// 			Issuer:    "gin-blog",
-// 		},
-// 	}
+	claims := jwt.MapClaims{}
+	claims["authorized"] = true
+	claims["user_id"] = user_id
+	claims["exp"] = time.Now().Add(time.Hour * time.Duration(token_lifespan)).Unix()
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-// 	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-// 	token, err := tokenClaims.SignedString([]byte(jwtSecret))
+	return token.SignedString([]byte(apisecret))
 
-// 	return token, err
-// }
+}
 
-// // ParseToken parsing token
-// func ParseToken(token string) (*Claims, error) {
-// 	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-// 		return jwtSecret, nil
-// 	})
+func TokenValid(c *gin.Context) error {
+	tokenString := ExtractToken(c)
+	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(apisecret), nil
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
-// 	if tokenClaims != nil {
-// 		if claims, ok := tokenClaims.Claims.(*Claims); ok && tokenClaims.Valid {
-// 			return claims, nil
-// 		}
-// 	}
+func ExtractToken(c *gin.Context) string {
+	token := c.Query("token")
+	if token != "" {
+		return token
+	}
+	bearerToken := c.Request.Header.Get("Authorization")
+	if len(strings.Split(bearerToken, " ")) == 2 {
+		return strings.Split(bearerToken, " ")[1]
+	}
+	return ""
+}
 
-// 	return nil, err
-// }
+func ExtractTokenID(c *gin.Context) (uint, error) {
+	tokenString := ExtractToken(c)
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(apisecret), nil
+	})
+	if err != nil {
+		return 0, err
+	}
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if ok && token.Valid {
+		uid, err := strconv.ParseUint(fmt.Sprintf("%.0f", claims["user_id"]), 10, 32)
+		if err != nil {
+			return 0, err
+		}
+		return uint(uid), nil
+	}
+	return 0, nil
+}

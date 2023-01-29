@@ -7,7 +7,8 @@ var MsgFlags = map[int]string{
 	ERROR_AUTH_CHECK_TOKEN_FAIL:    "auth token failed",
 	ERROR_AUTH_CHECK_TOKEN_TIMEOUT: "token timeout",
 	ERROR_AUTH_TOKEN:               "auth token",
-	ERROR_AUTH:                     "auth",
+	ERROR_STATUS_UNAUTHORIZED:      "Unauthorized",
+	ERROR_NOT_FOUND:                "Not found",
 }
 
 func GetMsg(code int) string {

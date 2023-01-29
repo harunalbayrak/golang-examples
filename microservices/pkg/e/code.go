@@ -7,8 +7,9 @@ const (
 	ERROR_AUTH_CHECK_TOKEN_FAIL    = 20001
 	ERROR_AUTH_CHECK_TOKEN_TIMEOUT = 20002
 	ERROR_AUTH_TOKEN               = 20003
-	ERROR_AUTH                     = 20004
+	ERROR_STATUS_UNAUTHORIZED      = 20004
+	ERROR_NOT_FOUND                = 20005
 
 	ERROR_INVALID_PARAMS = 400
-	ERROR_               = 401
+	ERROR_UN             = 401
 )

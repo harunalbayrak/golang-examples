@@ -2,7 +2,6 @@ package models
 
 import (
 	"examples/microservices/config"
-	"fmt"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
@@ -12,7 +11,7 @@ type Todo struct {
 	gorm.Model
 	Title       string `json:"title"`
 	Description string `json:"description"`
-	UserID      uint
+	UserID      uint   `json:"user_id"`
 }
 
 func (b *Todo) TableName() string {
@@ -42,12 +41,19 @@ func GetATodo(todo *Todo, id string, userID string) (err error) {
 }
 
 func UpdateATodo(todo *Todo) (err error) {
-	fmt.Println(todo)
-	config.DB.Save(todo)
+	if err := config.DB.Save(todo).Error; err != nil {
+		return err
+	}
+
 	return nil
 }
 
-func DeleteATodo(todo *Todo, id string, userID string) (err error) {
-	config.DB.Where("id = ? AND user_id = ?", id).Delete(todo)
+func DeleteATodo(id string, userID string) (err error) {
+	var todo Todo
+	GetATodo(&todo, id, userID)
+	if err := config.DB.Delete(todo).Error; err != nil {
+		return err
+	}
+
 	return nil
 }
