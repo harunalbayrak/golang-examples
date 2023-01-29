@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 	"examples/microservices/config"
+	"math/rand"
 
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
@@ -94,4 +95,21 @@ func GetUserByID(uid uint) (User, error) {
 	u.PrepareGive()
 
 	return u, nil
+}
+
+func CountUsers() int64 {
+	var count int64
+
+	config.DB.Table("users").Count(&count)
+
+	return count
+}
+
+func GetRandomUserId() int {
+	var u User
+	countUser := CountUsers()
+	offset := rand.Intn(int(countUser))
+	config.DB.Offset(offset).Find(&u)
+
+	return int(u.ID)
 }

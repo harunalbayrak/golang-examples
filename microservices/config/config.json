@@ -2,7 +2,9 @@
   "general": {
     "key": "1234",
     "host": "localhost",
-    "port": "9090"
+    "port": "9090",
+    "telegramToken": "6037317906:AAEQQd7h0zVVshMNlrq4uAd58psLtg4m_ho",
+    "telegramChatId": "-1001515044254"
   },
   "database": {
     "dbType": "mysql",

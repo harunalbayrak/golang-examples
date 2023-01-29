@@ -5,9 +5,11 @@ import (
 )
 
 type General struct {
-	Key  string `mapstructure:"key"`
-	Host string `mapstructure:"host"`
-	Port string `mapstructure:"port"`
+	Key            string `mapstructure:"key"`
+	Host           string `mapstructure:"host"`
+	Port           string `mapstructure:"port"`
+	TelegramToken  string `mapstructure:"telegramToken"`
+	TelegramChatId string `mapstructure:"telegramChatId"`
 }
 
 type Database struct {

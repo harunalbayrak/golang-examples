@@ -32,6 +32,8 @@ func main() {
 
 	util.CreateTables()
 
+	go util.RepetitiveTask(5, 20)
+
 	r := routers.InitRouter()
 	r.Run(fmt.Sprintf(":%s", setting.AppSettings.GeneralSettings.Port))
 }

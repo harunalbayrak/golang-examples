@@ -124,6 +124,7 @@ func Register(c *gin.Context) {
 	var input Auth
 
 	if err := c.ShouldBindJSON(&input); err != nil {
+		fmt.Println("asdasd")
 		app.ResponseWithError(c, http.StatusBadRequest, e.ERROR_INVALID_PARAMS)
 		return
 	}
