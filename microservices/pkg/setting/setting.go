@@ -5,6 +5,7 @@ import (
 )
 
 type General struct {
+	ApiEndpoint    string `json:"apiEndpoint"`
 	Key            string `mapstructure:"key"`
 	Host           string `mapstructure:"host"`
 	Port           string `mapstructure:"port"`

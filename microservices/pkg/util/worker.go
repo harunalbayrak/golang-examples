@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"examples/microservices/models"
+	"examples/microservices/pkg/setting"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -22,7 +23,7 @@ func RepetitiveTask(intervalTime int, endTime int) {
 			case <-ticker.C:
 				// do stuff
 				CreateFakeUser()
-				// CreateFakeTodo()
+				CreateFakeTodo()
 			case <-ticker2.C:
 				ticker.Stop()
 				return
@@ -31,7 +32,7 @@ func RepetitiveTask(intervalTime int, endTime int) {
 	}()
 }
 
-func CreateFakeUser() {
+func CreateFakeUser() error {
 	username := fake.UserName()
 	password := fake.Password(6, 10, true, true, true)
 
@@ -43,40 +44,59 @@ func CreateFakeUser() {
 		"type":     "user",
 	}
 
-	jsonValue, _ := json.Marshal(values)
-	resp, err := http.Post("http://localhost:9090/api/v1/register", "application/json", bytes.NewBuffer(jsonValue))
+	jsonValue, err := json.Marshal(values)
 	if err != nil {
-		fmt.Println("error craeting fake user")
-		return
+		fmt.Println("error marshaling values")
+		return err
+	}
+
+	resp, err := http.Post(setting.AppSettings.GeneralSettings.ApiEndpoint+"/register", "application/json", bytes.NewBuffer(jsonValue))
+	if err != nil {
+		fmt.Println("error creating fake user")
+		return err
 	}
 
 	var res map[string]interface{}
 
 	json.NewDecoder(resp.Body).Decode(&res)
 	fmt.Println(res["form"])
+
+	return nil
 }
 
-func CreateFakeTodo() {
+func CreateFakeTodo() error {
 	description := fake.Paragraph()
 	title := fake.Title()
 	randomId := models.GetRandomUserId()
 
 	fmt.Printf("Creating fake user... %s %s %d\n", description, title, randomId)
 
+	token, err := GenerateToken(uint(randomId))
+	if err != nil {
+		return err
+	}
+
 	values := map[string]string{
 		"description": description,
 		"title":       title,
 	}
 
-	jsonValue, _ := json.Marshal(values)
-	resp, err := http.Post("http://localhost:9090/api/v1/users/"+strconv.Itoa(randomId)+"/todo", "application/json", bytes.NewBuffer(jsonValue))
+	jsonValue, err := json.Marshal(values)
+	if err != nil {
+		fmt.Println("error marshaling values:")
+		return err
+	}
+
+	resp, err := http.Post(setting.AppSettings.GeneralSettings.ApiEndpoint+"/users/"+strconv.Itoa(randomId)+"/todo?token="+token, "application/json", bytes.NewBuffer(jsonValue))
 	if err != nil {
 		fmt.Println("error craeting fake todo")
-		return
+		return err
 	}
 
 	var res map[string]interface{}
 
 	json.NewDecoder(resp.Body).Decode(&res)
 	fmt.Println(res["form"])
+
+	return nil
 }

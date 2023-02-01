@@ -9,8 +9,8 @@ import (
 
 type Todo struct {
 	gorm.Model
-	Title       string `json:"title"`
-	Description string `json:"description"`
+	Title       string `json:"title" gorm:"size:1000"`
+	Description string `json:"description" gorm:"size:65535"`
 	UserID      uint   `json:"user_id"`
 }
 

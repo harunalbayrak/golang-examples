@@ -4,6 +4,7 @@ import (
 	"errors"
 	"examples/microservices/config"
 	"math/rand"
+	"time"
 
 	"github.com/jinzhu/gorm"
 	"golang.org/x/crypto/bcrypt"
@@ -97,8 +98,8 @@ func GetUserByID(uid uint) (User, error) {
 	return u, nil
 }
 
-func CountUsers() int64 {
-	var count int64
+func CountUsers() int {
+	var count int
 
 	config.DB.Table("users").Count(&count)
 
@@ -108,7 +109,9 @@ func CountUsers() int64 {
 func GetRandomUserId() int {
 	var u User
 	countUser := CountUsers()
-	offset := rand.Intn(int(countUser))
+
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	offset := r.Intn(countUser)
 	config.DB.Offset(offset).Find(&u)
 
 	return int(u.ID)
